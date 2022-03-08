@@ -6,14 +6,14 @@
 namespace spartonautics::tvc {
 
 // TODO(milind): fill out code
-linalg::Vector4 ThrustController::Iterate(
+linalg::Vector<ThrustController::kNumOutputs> ThrustController::Iterate(
     linalg::Vector3 accel, linalg::Vector3 gyro,
     chrono::system_clock::time_point now) {
-  linalg::Vector6 u = linalg::Vector6::Data(
+  linalg::Vector<kNumInputs> z = linalg::Vector<kNumInputs>::Data(
       {accel.x(), accel.y(), accel.z(), gyro.x(), gyro.y(), gyro.z()});
-  (void)u;
+  (void)z;
 
-  return linalg::Vector4();
+  return linalg::Vector<kNumOutputs>();
 }
 
 }  // namespace spartonautics::tvc

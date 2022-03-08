@@ -44,13 +44,13 @@ TEST(MatrixTest, AddSubtract) {
 }
 
 TEST(MatrixTest, Multiply) {
-  constexpr Matrix<double, 2, 3> kM1 =
-      Matrix<double, 2, 3>::Data{{{1.0, 2.0, 3.0}, {4.0, 5.0, 6.0}}};
-  constexpr Matrix<double, 3, 2> kM2 =
-      Matrix<double, 3, 2>::Data{{{7.0, 8.0}, {9.0, 10.0}, {11.0, 12.0}}};
+  constexpr Matrix<2, 3> kM1 =
+      Matrix<2, 3>::Data{{{1.0, 2.0, 3.0}, {4.0, 5.0, 6.0}}};
+  constexpr Matrix<3, 2> kM2 =
+      Matrix<3, 2>::Data{{{7.0, 8.0}, {9.0, 10.0}, {11.0, 12.0}}};
   EXPECT_EQ(kM1 * kM2, Matrix2(Matrix2::Data{{{58.0, 64.0}, {139.0, 154.0}}}));
-  constexpr auto kScaled = Matrix<double, 2, 3>(
-      Matrix<double, 2, 3>::Data{{{-2.0, -4.0, -6.0}, {-8.0, -10.0, -12.0}}});
+  constexpr auto kScaled = Matrix<2, 3>(
+      Matrix<2, 3>::Data{{{-2.0, -4.0, -6.0}, {-8.0, -10.0, -12.0}}});
   constexpr auto kScaledResult = -2.0 * kM1;
   EXPECT_EQ(kScaledResult, kScaled);
 }
