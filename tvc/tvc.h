@@ -1,4 +1,9 @@
+#ifndef TVC_TVC_H_
+#define TVC_TVC_H_
+
 #include <cstddef>
+
+#include "linalg/matrix.h"
 
 namespace spartonautics::tvc {
 
@@ -11,3 +16,5 @@ class ThrustController {
 };
 
 }  // namespace spartonautics::tvc
+
+#endif  // TVC_TVC_H_

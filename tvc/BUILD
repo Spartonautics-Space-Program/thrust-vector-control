@@ -7,6 +7,7 @@ cc_library(
         "tvc.h",
     ],
     deps = [
+        "//linalg:matrix_lib",
         "@com_github_google_glog//:glog",
     ],
 )
