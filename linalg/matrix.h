@@ -8,7 +8,7 @@
 namespace spartonautics::linalg {
 
 // Fixed size, stack-allocated dense matrix
-template <typename S, size_t Rows, size_t Cols>
+template <size_t Rows, size_t Cols, typename S = double>
 class Matrix {
  public:
   using Row = std::array<S, Cols>;
@@ -63,7 +63,7 @@ class Matrix {
   constexpr Data::iterator end() { return data_.end(); }
   constexpr Data::const_iterator cend() const { return data_.cend(); }
 
-  constexpr bool operator==(const Matrix<S, Rows, Cols> &mat) const {
+  constexpr bool operator==(const Matrix<Rows, Cols, S> &mat) const {
     bool equal = true;
     for (size_t i = 0; equal && i < Rows; i++) {
       for (size_t j = 0; equal && j < Cols; j++) {
@@ -74,33 +74,33 @@ class Matrix {
     }
     return equal;
   }
-  constexpr bool operator!=(const Matrix<S, Rows, Cols> &mat) const {
+  constexpr bool operator!=(const Matrix<Rows, Cols, S> &mat) const {
     return !(*this == mat);
   }
 
-  constexpr void operator+=(const Matrix<S, Rows, Cols> &mat) {
+  constexpr void operator+=(const Matrix<Rows, Cols, S> &mat) {
     AddSubtract(true, mat, this);  // true means addition
   }
-  constexpr void operator-=(const Matrix<S, Rows, Cols> &mat) {
+  constexpr void operator-=(const Matrix<Rows, Cols, S> &mat) {
     AddSubtract(false, mat, this);  // false means subtraction
   }
-  constexpr Matrix<S, Rows, Cols> operator+(
-      const Matrix<S, Rows, Cols> &mat) const {
-    Matrix<S, Rows, Cols> sum;
+  constexpr Matrix<Rows, Cols, S> operator+(
+      const Matrix<Rows, Cols, S> &mat) const {
+    Matrix<Rows, Cols, S> sum;
     AddSubtract(true, mat, &sum);
     return sum;
   }
-  constexpr Matrix<S, Rows, Cols> operator-(
-      const Matrix<S, Rows, Cols> &mat) const {
-    Matrix<S, Rows, Cols> diff;
+  constexpr Matrix<Rows, Cols, S> operator-(
+      const Matrix<Rows, Cols, S> &mat) const {
+    Matrix<Rows, Cols, S> diff;
     AddSubtract(false, mat, &diff);
     return diff;
   }
 
   template <size_t MCols>
-  constexpr Matrix<S, Rows, MCols> operator*(
-      const Matrix<S, Cols, MCols> &mat) const {
-    Matrix<S, Rows, MCols> product;
+  constexpr Matrix<Rows, MCols, S> operator*(
+      const Matrix<Cols, MCols, S> &mat) const {
+    Matrix<Rows, MCols, S> product;
     for (size_t row = 0; row < Rows; row++) {
       for (size_t col = 0; col < MCols; col++) {
         S sum = 0;
@@ -114,8 +114,8 @@ class Matrix {
   }
 
   constexpr void operator*=(const S scalar) { Scale(scalar, this); }
-  constexpr Matrix<S, Rows, Cols> operator*(const S scalar) const {
-    Matrix<S, Rows, Cols> scaled;
+  constexpr Matrix<Rows, Cols, S> operator*(const S scalar) const {
+    Matrix<Rows, Cols, S> scaled;
     Scale(scalar, &scaled);
     return scaled;
   }
@@ -125,8 +125,8 @@ class Matrix {
 
  private:
   constexpr void AddSubtract(const bool addition,
-                             const Matrix<S, Rows, Cols> &src,
-                             Matrix<S, Rows, Cols> *dst) const {
+                             const Matrix<Rows, Cols, S> &src,
+                             Matrix<Rows, Cols, S> *dst) const {
     for (size_t i = 0; i < Rows; i++) {
       for (size_t j = 0; j < Cols; j++) {
         (*dst)(i, j) =
@@ -135,7 +135,7 @@ class Matrix {
     }
   }
 
-  constexpr void Scale(const S scalar, Matrix<S, Rows, Cols> *dst) const {
+  constexpr void Scale(const S scalar, Matrix<Rows, Cols, S> *dst) const {
     for (size_t i = 0; i < Rows; i++) {
       for (size_t j = 0; j < Cols; j++) {
         (*dst)(i, j) = at(i, j) * scalar;
@@ -144,35 +144,35 @@ class Matrix {
   }
 };
 
-template <typename S, size_t Size>
-class Vector : public Matrix<S, Size, 1> {
+template <size_t Size, typename S = double>
+class Vector : public Matrix<Size, 1, S> {
  public:
   using Data = std::array<S, Size>;
 
-  constexpr Vector() : Matrix<S, Size, 1>() {}
+  constexpr Vector() : Matrix<Size, 1, S>() {}
   constexpr Vector(const Data &vec) {
     for (size_t i = 0; i < Size; i++) {
-      Matrix<S, Size, 1>::data_[i][0] = vec[i];
+      Matrix<Size, 1, S>::data_[i][0] = vec[i];
     }
   }
 
   virtual void Print(std::ostream &os) const override {
     os << '[';
     for (size_t i = 0; i < Size - 1; i++) {
-      os << Matrix<S, Size, 1>::at(i, 0) << ", ";
+      os << Matrix<Size, 1, S>::at(i, 0) << ", ";
     }
-    os << Matrix<S, Size, 1>::at(Size - 1, 0) << ']';
+    os << Matrix<Size, 1, S>::at(Size - 1, 0) << ']';
   }
 
   constexpr S &operator()(const size_t i) {
-    return Matrix<S, Size, 1>::data_[i][0];
+    return Matrix<Size, 1, S>::data_[i][0];
   }
 
   constexpr const S &at(const size_t i) const {
-    return Matrix<S, Size, 1>::at(i, 0);
+    return Matrix<Size, 1, S>::at(i, 0);
   }
 
-  constexpr S Dot(const Vector<S, Size> &vec) const {
+  constexpr S Dot(const Vector<Size, S> &vec) const {
     S dot = S(0.0);
     for (size_t i = 0; i < Size; i++) {
       dot += at(i) * vec.at(i);
@@ -189,28 +189,28 @@ class Vector : public Matrix<S, Size, 1> {
   }
 };
 
-template <typename S, size_t Rows, size_t Cols>
-std::ostream &operator<<(std::ostream &os, const Matrix<S, Rows, Cols> &mat) {
+template <size_t Rows, size_t Cols, typename S = double>
+std::ostream &operator<<(std::ostream &os, const Matrix<Rows, Cols, S> &mat) {
   mat.Print(os);
   return os;
 }
 
-template <typename S, size_t Rows, size_t Cols>
-constexpr Matrix<S, Rows, Cols> operator*(const S scalar,
-                                          const Matrix<S, Rows, Cols> &mat) {
+template <size_t Rows, size_t Cols, typename S = double>
+constexpr Matrix<Rows, Cols, S> operator*(const S scalar,
+                                          const Matrix<Rows, Cols, S> &mat) {
   return mat * scalar;
 }
 
-using Matrix2 = Matrix<double, 2, 2>;
-using Matrix3 = Matrix<double, 3, 3>;
-using Matrix4 = Matrix<double, 4, 4>;
-using Matrix5 = Matrix<double, 5, 5>;
-using Matrix6 = Matrix<double, 6, 6>;
-using Vector2 = Vector<double, 2>;
-using Vector3 = Vector<double, 3>;
-using Vector4 = Vector<double, 4>;
-using Vector5 = Vector<double, 5>;
-using Vector6 = Vector<double, 6>;
+using Matrix2 = Matrix<2, 2>;
+using Matrix3 = Matrix<3, 3>;
+using Matrix4 = Matrix<4, 4>;
+using Matrix5 = Matrix<5, 5>;
+using Matrix6 = Matrix<6, 6>;
+using Vector2 = Vector<2>;
+using Vector3 = Vector<3>;
+using Vector4 = Vector<4>;
+using Vector5 = Vector<5>;
+using Vector6 = Vector<6>;
 
 }  // namespace spartonautics::linalg
 

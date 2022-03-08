@@ -14,22 +14,30 @@ namespace spartonautics::tvc {
 
 class ThrustController {
  public:
+  static constexpr size_t kNumStates = 9;
+  static constexpr size_t kNumInputs = 6;
+  static constexpr size_t kNumOutputs = 4;
+
   // Kalman filter for estimating state and computing optimal thrust vector.
-  // Inputs: 6 dimensions, acceleration and angular velocity x, y, z.
+  // Inputs: acceleration and angular velocity x, y, z.
   // Also takes in current time, but not as an input.
-  // State: 6 dimensions, position and velocity x, y, z.
-  // Outputs: 4 dimensions, thrust roll, pitch, yaw, and magnitude.
-  linalg::Vector4 Iterate(linalg::Vector3 accel, linalg::Vector3 gyro,
-                          chrono::system_clock::time_point now);
+  // State: position and velocity x, y, z, rotation roll, pitch,
+  // yaw.
+  // Outputs: thrust roll, pitch, yaw, and magnitude.
+  linalg::Vector<kNumOutputs> Iterate(linalg::Vector3 accel,
+                                      linalg::Vector3 gyro,
+                                      chrono::system_clock::time_point now);
 
  private:
-  static constexpr linalg::Matrix6 kQ = linalg::Matrix6();
-  static constexpr linalg::Matrix6 kR = linalg::Matrix6();
-  static constexpr linalg::Matrix<double, 6, 4> kH =
-      linalg::Matrix<double, 6, 4>();
+  static constexpr linalg::Matrix<kNumStates, kNumStates> kQ =
+      linalg::Matrix<kNumStates, kNumStates>();
+  static constexpr linalg::Matrix<kNumInputs, kNumInputs> kR =
+      linalg::Matrix<kNumInputs, kNumInputs>();
+  static constexpr linalg::Matrix<kNumInputs, kNumStates> kH =
+      linalg::Matrix<kNumInputs, kNumStates>();
 
-  linalg::Vector6 x_hat_;
-  linalg::Matrix6 P_;
+  linalg::Vector<kNumStates> x_hat_;
+  linalg::Matrix<kNumStates, kNumStates> P_;
   chrono::system_clock::time_point last_now_ =
       chrono::system_clock::time_point::min();
 };
