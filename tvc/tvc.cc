@@ -3,16 +3,17 @@
 #include "gflags/gflags.h"
 #include "glog/logging.h"
 
-DEFINE_bool(twice, false, "If true, print twice");
-
 namespace spartonautics::tvc {
 
-size_t ThrustController::HelloWorld() const {
-  const size_t iterations = (FLAGS_twice ? 2ul : 1ul);
-  for (size_t i = 0; i < iterations; i++) {
-    LOG(INFO) << "Hello, World!";
-  }
-  return iterations;
+// TODO(milind): fill out code
+linalg::Vector4 ThrustController::Iterate(
+    linalg::Vector3 accel, linalg::Vector3 gyro,
+    chrono::system_clock::time_point now) {
+  linalg::Vector6 u = linalg::Vector6::Data(
+      {accel.x(), accel.y(), accel.z(), gyro.x(), gyro.y(), gyro.z()});
+  (void)u;
+
+  return linalg::Vector4();
 }
 
 }  // namespace spartonautics::tvc

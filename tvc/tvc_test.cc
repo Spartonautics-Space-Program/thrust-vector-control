@@ -1,12 +1,15 @@
 #include "tvc/tvc.h"
 
+#include <chrono>
+
 #include "gtest/gtest.h"
 
 namespace spartonautics::tvc::testing {
 
 TEST(ThrustControllerTest, HelloWorld) {
   ThrustController controller;
-  EXPECT_EQ(controller.HelloWorld(), 1ul);
+  controller.Iterate(linalg::Vector3(), linalg::Vector3(),
+                     std::chrono::system_clock::now());
 }
 
 }  // namespace spartonautics::tvc::testing

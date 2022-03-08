@@ -204,9 +204,13 @@ constexpr Matrix<S, Rows, Cols> operator*(const S scalar,
 using Matrix2 = Matrix<double, 2, 2>;
 using Matrix3 = Matrix<double, 3, 3>;
 using Matrix4 = Matrix<double, 4, 4>;
+using Matrix5 = Matrix<double, 5, 5>;
+using Matrix6 = Matrix<double, 6, 6>;
 using Vector2 = Vector<double, 2>;
 using Vector3 = Vector<double, 3>;
-using Vector4 = Vector<double, 3>;
+using Vector4 = Vector<double, 4>;
+using Vector5 = Vector<double, 5>;
+using Vector6 = Vector<double, 6>;
 
 }  // namespace spartonautics::linalg
 
