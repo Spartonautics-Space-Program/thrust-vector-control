@@ -2,4 +2,4 @@ build -c opt
 run -c opt
 test -c opt --test_output all
 
-build --action_env=BAZEL_CXXOPTS="-std=c++20:-Werror"
+build --action_env=BAZEL_CXXOPTS="-std=c++2a:-Werror"
