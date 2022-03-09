@@ -126,6 +126,16 @@ class Matrix {
     return scaled;
   }
 
+  constexpr Matrix<Cols, Rows, S> Transpose() const {
+    Matrix<Cols, Rows, S> dagger;
+    for (size_t i = 0; i < Rows; i++) {
+      for (size_t j = 0; j < Cols; j++) {
+        dagger(j, i) = at(i, j);
+      }
+    }
+    return dagger;
+  }
+
  protected:
   Data data_;
 
