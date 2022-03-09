@@ -97,20 +97,26 @@ class Matrix {
     return diff;
   }
 
+  template <size_t Rows1, size_t Cols1, size_t Cols2>
+  static constexpr void Multiply(const Matrix<Rows1, Cols1, S> &mat1,
+                                 const Matrix<Cols1, Cols2, S> &mat2,
+                                 Matrix<Rows1, Cols2, S> *product) {
+    for (size_t row = 0; row < Rows1; row++) {
+      for (size_t col = 0; col < Cols2; col++) {
+        S sum = 0;
+        for (size_t i = 0; i < Cols1; i++) {
+          sum += mat1.at(row, i) * mat2.at(i, col);
+        }
+        (*product)(row, col) = sum;
+      }
+    }
+  }
+
   template <size_t MCols>
   constexpr Matrix<Rows, MCols, S> operator*(
       const Matrix<Cols, MCols, S> &mat) const {
     Matrix<Rows, MCols, S> product;
-    for (size_t row = 0; row < Rows; row++) {
-      for (size_t col = 0; col < MCols; col++) {
-        S sum = 0;
-        for (size_t i = 0; i < Cols; i++) {
-          sum += at(row, i) * mat.at(i, col);
-        }
-        product(row, col) = sum;
-      }
-    }
-    return product;
+    Multiply(*this, mat, &product);
   }
 
   constexpr void operator*=(const S scalar) { Scale(scalar, this); }
@@ -199,6 +205,14 @@ template <size_t Rows, size_t Cols, typename S = double>
 constexpr Matrix<Rows, Cols, S> operator*(const S scalar,
                                           const Matrix<Rows, Cols, S> &mat) {
   return mat * scalar;
+}
+
+template <size_t Rows, size_t Cols, typename S = double>
+constexpr Vector<Rows, S> operator*(const Matrix<Rows, Cols, S> &mat,
+                                    const Vector<Rows, S> &vec) {
+  Vector<Rows, S> product;
+  Matrix<Rows, Cols, S>::Multiply(mat, vec, &product);
+  return product;
 }
 
 using Matrix2 = Matrix<2, 2>;
