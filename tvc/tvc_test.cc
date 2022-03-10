@@ -32,9 +32,11 @@ TEST(ThrustControllerTest, Predict) {
 
   auto controller =
       ThrustController(linalg::Vector<ThrustController::kNumStates>::Data(
-          {kP.x(), kP.y(), kP.z(), kV.x(), kV.y(), kV.z(), kA.x(), kA.y(),
-           kA.z(), kTheta.x(), kTheta.y(), kTheta.z(), kOmega.x(), kOmega.y(),
-           kOmega.z()}));
+                           {kP.x(), kP.y(), kP.z(), kV.x(), kV.y(), kV.z(),
+                            kA.x(), kA.y(), kA.z(), kTheta.x(), kTheta.y(),
+                            kTheta.z(), kOmega.x(), kOmega.y(), kOmega.z()}),
+                       linalg::Matrix<ThrustController::kNumStates,
+                                      ThrustController::kNumStates>());
   constexpr double kT = 0.5;
   controller.Predict(kT);
   EXPECT_EQ(

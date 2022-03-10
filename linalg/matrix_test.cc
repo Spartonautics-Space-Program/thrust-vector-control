@@ -55,6 +55,16 @@ TEST(MatrixTest, Multiply) {
   EXPECT_EQ(kScaledResult, kScaled);
 }
 
+TEST(MatrixTest, Transpose) {
+  constexpr Matrix<3, 2> kM1 =
+      Matrix<3, 2>::Data{{{1.0, 2.0}, {3.0, 4.0}, {5.0, 6.0}}};
+  constexpr Matrix<2, 3> kM1Dagger =
+      Matrix<2, 3>::Data{{{1.0, 3.0, 5.0}, {2.0, 4.0, 6.0}}};
+  EXPECT_EQ(kM1.Transpose(), kM1Dagger);
+  constexpr Matrix<1, 2> kM2 = Matrix<1, 2>::Data{{{1.0, 2.0}}};
+  EXPECT_EQ(kM2.Transpose(), Vector2(Vector2::Data{1.0, 2.0}));
+}
+
 TEST(MatrixTest, Vector) {
   Vector3 v = Vector3::Data{{1.0, 2.0, 3.0}};
   EXPECT_EQ(v.x(), 1.0);

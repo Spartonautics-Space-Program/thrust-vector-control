@@ -19,29 +19,29 @@ class ThrustController {
   static constexpr size_t kNumOutputs = 4;
 
   ThrustController();
-  ThrustController(linalg::Vector<kNumStates> x_hat);
+  ThrustController(linalg::Vector<kNumStates> x_hat,
+                   linalg::Matrix<kNumStates, kNumStates> P);
 
   // Kalman filter for estimating state and computing optimal thrust vector.
-  // Inputs: acceleration and angular veclocity x, y, z
+  // Inputs: position and angular veclocity x, y, z
   // State: position, velocity, acceleration, angle, angular velocity x, y, z
   // Outputs: optimal thrust euler angles and magnitude
-  linalg::Vector<kNumOutputs> Iterate(linalg::Vector3 accel,
-                                      linalg::Vector3 gyro,
+  linalg::Vector<kNumOutputs> Iterate(linalg::Vector3 pos,
+                                      linalg::Vector3 omega,
                                       chrono::system_clock::time_point now);
 
   // Predicts what the state is before using the measurement
   void Predict(double dt);
   // Corrects the prediction using the measurements
-  void Correct(linalg::Vector3 accel, linalg::Vector3 gyro, double dt);
+  void Correct(linalg::Vector3 pos, linalg::Vector3 omega, double dt);
   // After predicting and correcting the state, computes the thrust vector
   linalg::Vector<kNumOutputs> ComputeThrust() const;
 
   inline linalg::Vector<kNumStates> x_hat() const { return x_hat_; }
 
  private:
-  // Process noise uncertainty
-  static constexpr linalg::Matrix<kNumStates, kNumStates> kQ =
-      linalg::Matrix<kNumStates, kNumStates>();
+  // Acceleration standard deviation
+  static constexpr double kAccelerationStdDev = 0.2;
   // Measurement uncertainty
   static constexpr linalg::Matrix<kNumInputs, kNumInputs> kR =
       linalg::Matrix<kNumInputs, kNumInputs>();

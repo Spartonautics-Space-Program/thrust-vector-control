@@ -117,6 +117,7 @@ class Matrix {
       const Matrix<Cols, MCols, S> &mat) const {
     Matrix<Rows, MCols, S> product;
     Multiply(*this, mat, &product);
+    return product;
   }
 
   constexpr void operator*=(const S scalar) { Scale(scalar, this); }
@@ -124,6 +125,16 @@ class Matrix {
     Matrix<Rows, Cols, S> scaled;
     Scale(scalar, &scaled);
     return scaled;
+  }
+
+  constexpr Matrix<Cols, Rows, S> Transpose() const {
+    Matrix<Cols, Rows, S> dagger;
+    for (size_t i = 0; i < Rows; i++) {
+      for (size_t j = 0; j < Cols; j++) {
+        dagger(j, i) = at(i, j);
+      }
+    }
+    return dagger;
   }
 
  protected:
