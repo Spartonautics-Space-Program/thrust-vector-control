@@ -9,6 +9,6 @@ int main(int argc, char **argv) {
 
   FLAGS_logtostderr = true;
 
+  // TODO(milind): add phased loop
   spartonautics::tvc::ThrustController thrust_controller;
-  thrust_controller.HelloWorld();
 }

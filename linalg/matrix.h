@@ -117,6 +117,7 @@ class Matrix {
       const Matrix<Cols, MCols, S> &mat) const {
     Matrix<Rows, MCols, S> product;
     Multiply(*this, mat, &product);
+    return product;
   }
 
   constexpr void operator*=(const S scalar) { Scale(scalar, this); }

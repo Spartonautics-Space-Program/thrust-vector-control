@@ -6,10 +6,12 @@
 namespace spartonautics::tvc {
 
 ThrustController::ThrustController()
-    : ThrustController(linalg::Vector<kNumStates>()) {}
+    : ThrustController(linalg::Vector<kNumStates>(),
+                       linalg::Matrix<kNumStates, kNumStates>()) {}
 
-ThrustController::ThrustController(linalg::Vector<kNumStates> x_hat)
-    : x_hat_(x_hat), P_(), now_(chrono::system_clock::time_point::min()) {}
+ThrustController::ThrustController(linalg::Vector<kNumStates> x_hat,
+                                   linalg::Matrix<kNumStates, kNumStates> P)
+    : x_hat_(x_hat), P_(P), now_(chrono::system_clock::time_point::min()) {}
 
 // TODO(milind): fill out code
 linalg::Vector<ThrustController::kNumOutputs> ThrustController::Iterate(
@@ -66,14 +68,73 @@ void ThrustController::Predict(double dt) {
       }};
   x_hat_ = F * x_hat_;
 
-  // TODO(milind): predict uncertainty
+  // Process noise uncertainty
+  // Assume that the noise of measurements on separate axes isn't correlated,
+  // and states are only correlated with their derivitives and antiderivitives.
+  // Noise for position
+  const double p_noise = std::pow(dt, 4.0) / 4.0;
+  // Noise for 1st derivitive
+  const double p_dot_noise = std::pow(dt, 3.0) / 2.0;
+  // Noise for 2nd derivitive
+  const double p_dot_dot_noise = std::pow(dt, 2.0) / 2.0;
+
+  // Noise for velocity
+  const double v_noise = std::pow(dt, 2.0);
+  // Noise for 1st derivitive
+  const double v_dot_noise = dt;
+
+  // Noise for acceleration
+  const double a_noise = 1.0;
+
+  const auto Q =
+      std::pow(kAccelerationStdDev, 2) *
+      linalg::Matrix<kNumStates, kNumStates>(
+          linalg::Matrix<kNumStates, kNumStates>::Data{
+              {// Position noise
+               {p_noise, 0.0, 0.0, p_dot_noise, 0.0, 0.0, p_dot_dot_noise, 0.0,
+                0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0},
+               {0.0, p_noise, 0.0, 0.0, p_dot_noise, 0.0, 0.0, p_dot_dot_noise,
+                0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0},
+               {0.0, 0.0, p_noise, 0.0, 0.0, p_dot_noise, 0.0, 0.0,
+                p_dot_dot_noise, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0},
+               // Velocity noise
+               {p_dot_noise, 0.0, 0.0, v_noise, 0.0, 0.0, 0.0, 0.0, v_dot_noise,
+                0.0, 0.0, 0.0, 0.0, 0.0, 0.0},
+               {0.0, p_dot_noise, 0.0, 0.0, v_noise, 0.0, 0.0, v_dot_noise, 0.0,
+                0.0, 0.0, 0.0, 0.0, 0.0, 0.0},
+               {0.0, 0.0, p_dot_noise, 0.0, 0.0, v_noise, 0.0, 0.0, v_dot_noise,
+                0.0, 0.0, 0.0, 0.0, 0.0, 0.0},
+               // Acceleration noise
+               {p_dot_dot_noise, 0.0, 0.0, v_dot_noise, 0.0, 0.0, a_noise, 0.0,
+                0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0},
+               {0.0, p_dot_dot_noise, 0.0, 0.0, v_dot_noise, 0.0, 0.0, a_noise,
+                0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0},
+               {0.0, 0.0, p_dot_dot_noise, 0.0, 0.0, v_dot_noise, 0.0, 0.0,
+                a_noise, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0},
+               // Angle noise
+               {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, p_noise, 0.0, 0.0,
+                p_dot_noise, 0.0, 0.0},
+               {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, p_noise, 0.0,
+                0.0, p_dot_noise, 0.0},
+               {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, p_noise,
+                0.0, 0.0, p_dot_noise},
+               // Angular velocity noise
+               {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, p_dot_noise, 0.0,
+                0.0, v_noise, 0.0, 0.0},
+               {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, p_dot_noise,
+                0.0, 0.0, v_noise, 0.0},
+               {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+                p_dot_noise, 0.0, 0.0, v_noise}}});
+
+  // Update estimate uncertainty
+  P_ = (F * P_ * F.Transpose()) + Q;
 }
 
 // TODO(milind): write code
-void ThrustController::Correct(linalg::Vector3 accel, linalg::Vector3 gyro,
+void ThrustController::Correct(linalg::Vector3 pos, linalg::Vector3 omega,
                                double dt) {
   linalg::Vector<kNumInputs> z = linalg::Vector<kNumInputs>::Data(
-      {accel.x(), accel.y(), accel.z(), gyro.x(), gyro.y(), gyro.z()});
+      {pos.x(), pos.y(), pos.z(), omega.x(), omega.y(), omega.z()});
   (void)z;
 }
 
