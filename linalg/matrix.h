@@ -24,6 +24,17 @@ class Matrix {
   }
   constexpr Matrix(const Data &mat) : data_(mat) {}
 
+  static constexpr Matrix<Rows, Cols, S> Identity() {
+    static_assert(Rows == Cols, "Identity matrix must be square");
+
+    Matrix<Rows, Cols, S> identity;
+    for (size_t i = 0; i < Rows; i++) {
+      identity(i, i) = S(1.0);
+    }
+
+    return identity;
+  }
+
   virtual void Print(std::ostream &os) const {
     os << '[';
     for (size_t i = 0; i < Rows; i++) {

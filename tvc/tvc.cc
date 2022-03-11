@@ -135,7 +135,15 @@ void ThrustController::Correct(linalg::Vector3 pos, linalg::Vector3 omega,
                                double dt) {
   linalg::Vector<kNumInputs> z = linalg::Vector<kNumInputs>::Data(
       {pos.x(), pos.y(), pos.z(), omega.x(), omega.y(), omega.z()});
-  (void)z;
+  // TODO(milind): fill in matrices and write matrix inverse method
+  linalg::Matrix<kNumStates, kNumInputs> K =
+      P_ * kH.Transpose() * (kH * P_ * kH.Transpose() + kR) /*.Inverse()*/;
+
+  x_hat_ += K * (z - (kH * x_hat_));
+  P_ = (linalg::Matrix<kNumStates, kNumStates>::Identity() - (K * kH)) * P_ *
+           (linalg::Matrix<kNumStates, kNumStates>::Identity() - (K * kH))
+               .Transpose() +
+       (K * kR * K.Transpose());
 }
 
 // TODO(milind): write code
