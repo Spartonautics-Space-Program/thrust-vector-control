@@ -65,6 +65,14 @@ TEST(MatrixTest, Transpose) {
   EXPECT_EQ(kM2.Transpose(), Vector2(Vector2::Data{1.0, 2.0}));
 }
 
+TEST(MatrixTest, Identity) {
+  constexpr auto kI2 = Matrix2(Matrix2::Data{{{1.0, 0.0}, {0.0, 1.0}}});
+  EXPECT_EQ(Matrix2::Identity(), kI2);
+  constexpr auto kI3 = Matrix3(
+      Matrix3::Data{{{1.0, 0.0, 0.0}, {0.0, 1.0, 0.0}, {0.0, 0.0, 1.0}}});
+  EXPECT_EQ(Matrix3::Identity(), kI3);
+}
+
 TEST(MatrixTest, Vector) {
   Vector3 v = Vector3::Data{{1.0, 2.0, 3.0}};
   EXPECT_EQ(v.x(), 1.0);
