@@ -1,13 +1,10 @@
-#include "gflags/gflags.h"
-#include "glog/logging.h"
 #include "tvc/tvc.h"
+#include "util/util.h"
+
+#define PICO
 
 int main(int argc, char **argv) {
-  google::InitGoogleLogging(argv[0]);
-  gflags::ParseCommandLineFlags(&argc, &argv, true);
-  google::InstallFailureSignalHandler();
-
-  FLAGS_logtostderr = true;
+  spartonautics::util::InitGoogle(&argc, &argv);
 
   // TODO(milind): add phased loop
   spartonautics::tvc::ThrustController thrust_controller;

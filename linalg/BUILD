@@ -17,7 +17,6 @@ cc_test(
     ],
     deps = [
         ":matrix_lib",
-        "@com_github_google_glog//:glog",
-        "@com_google_googletest//:gtest_main",
+        "//util:util_lib",
     ],
 )

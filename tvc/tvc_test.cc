@@ -2,9 +2,12 @@
 
 #include <chrono>
 
-#include "gtest/gtest.h"
+#include "util/util.h"
 
 namespace spartonautics::tvc::testing {
+
+const auto kTestEnv =
+    ::testing::AddGlobalTestEnvironment(new util::TestEnvironment());
 
 double ComputePosition(linalg::Vector3 x_0, linalg::Vector3 v_0,
                        linalg::Vector3 a, size_t axis, double t) {

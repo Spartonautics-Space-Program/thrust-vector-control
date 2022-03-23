@@ -8,7 +8,7 @@ cc_library(
     ],
     deps = [
         "//linalg:matrix_lib",
-        "@com_github_google_glog//:glog",
+        "//util:util_lib",
     ],
 )
 
@@ -29,6 +29,6 @@ cc_test(
     ],
     deps = [
         ":tvc_lib",
-        "@com_google_googletest//:gtest_main",
+        "//util:util_lib",
     ],
 )
