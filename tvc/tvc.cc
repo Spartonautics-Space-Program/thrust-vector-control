@@ -1,7 +1,6 @@
 #include "tvc/tvc.h"
 
-#include "gflags/gflags.h"
-#include "glog/logging.h"
+#include "util/util.h"
 
 namespace spartonautics::tvc {
 

@@ -1,9 +1,11 @@
 #include "linalg/matrix.h"
 
-#include "glog/logging.h"
-#include "gtest/gtest.h"
+#include "util/util.h"
 
 namespace spartonautics::linalg::testing {
+
+const auto kTestEnv =
+    ::testing::AddGlobalTestEnvironment(new util::TestEnvironment());
 
 TEST(MatrixTest, Iterating) {
   constexpr Matrix3 kM =
