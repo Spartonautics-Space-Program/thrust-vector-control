@@ -129,12 +129,10 @@ void ThrustController::Predict(double dt) {
   P_ = (F * P_ * F.Transpose()) + Q;
 }
 
-// TODO(milind): write code
-void ThrustController::Correct(linalg::Vector3 pos, linalg::Vector3 omega,
+void ThrustController::Correct(linalg::Vector3 accel, linalg::Vector3 omega,
                                double dt) {
   linalg::Vector<kNumInputs> z = linalg::Vector<kNumInputs>::Data(
-      {pos.x(), pos.y(), pos.z(), omega.x(), omega.y(), omega.z()});
-  // TODO(milind): fill in matrices and write matrix inverse method
+      {accel.x(), accel.y(), accel.z(), accel.x(), omega.y(), omega.z()});
   linalg::Matrix<kNumStates, kNumInputs> K =
       P_ * kH.Transpose() * (kH * P_ * kH.Transpose() + kR).Inverse();
 
